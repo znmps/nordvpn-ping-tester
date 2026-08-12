@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NordVPN Server Explorer & Global Ping Tester</title>
-    <!-- Tailwind CSS CDN -->
+    <title>NordVPN Server Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
@@ -16,16 +12,12 @@
     <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-30 shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-xl shadow">
-                    N
-                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-xl shadow">N</div>
                 <div>
                     <h1 class="text-xl font-bold tracking-tight">NordVPN Servers</h1>
                     <p class="text-xs text-slate-400">Live Explorer & Real-Time Browser Ping</p>
                 </div>
             </div>
-
-            <!-- Global Stats -->
             <div id="statsContainer" class="flex items-center space-x-6 text-sm text-slate-300">
                 <div>Total: <span id="statTotal" class="font-semibold text-white">--</span></div>
                 <div>Online: <span id="statOnline" class="font-semibold text-emerald-400">--</span></div>
@@ -34,29 +26,21 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-
-        <!-- Controls / Filters -->
+        <!-- Controls -->
         <div class="bg-slate-800 rounded-xl p-4 sm:p-6 mb-6 border border-slate-700 shadow-sm space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                
-                <!-- Search -->
                 <div>
                     <label for="searchInput" class="block text-xs font-medium text-slate-400 mb-1">Search</label>
-                    <input type="text" id="searchInput" placeholder="Name, IP, Hostname..." 
-                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500">
+                    <input type="text" id="searchInput" placeholder="Name, IP, Hostname..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-
-                <!-- Country Filter -->
                 <div>
                     <label for="countryFilter" class="block text-xs font-medium text-slate-400 mb-1">Country</label>
                     <select id="countryFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">All Countries</option>
                     </select>
                 </div>
-
-                <!-- Status Filter -->
                 <div>
                     <label for="statusFilter" class="block text-xs font-medium text-slate-400 mb-1">Status</label>
                     <select id="statusFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -65,8 +49,6 @@
                         <option value="offline">Offline</option>
                     </select>
                 </div>
-
-                <!-- Sort -->
                 <div>
                     <label for="sortBy" class="block text-xs font-medium text-slate-400 mb-1">Sort By</label>
                     <select id="sortBy" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -76,45 +58,31 @@
                         <option value="load_desc">Load (Highest First)</option>
                     </select>
                 </div>
-
-                <!-- Batch Ping Button -->
                 <div class="flex items-end">
-                    <button id="btnPingVisible" onclick="pingVisibleServers()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm py-2 px-3 rounded-lg transition flex items-center justify-center space-x-1 shadow">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        <span>Ping Visible Page</span>
+                    <button id="btnPingVisible" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm py-2 px-3 rounded-lg transition">
+                        Ping Visible Page
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Loading State -->
+        <!-- Status Views -->
         <div id="loadingState" class="flex flex-col items-center justify-center py-20">
             <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p class="text-slate-400 text-sm">Fetching server list from NordVPN API...</p>
         </div>
 
-        <!-- Error State -->
         <div id="errorState" class="hidden bg-red-900/30 border border-red-500/50 rounded-xl p-6 text-center max-w-lg mx-auto my-12">
             <h3 class="text-lg font-semibold text-red-400 mb-2">Failed to load server data</h3>
-            <p id="errorMessage" class="text-sm text-slate-300 mb-4">An error occurred while fetching servers.</p>
-            <button onclick="fetchServers()" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                Retry Connection
-            </button>
+            <p id="errorMessage" class="text-sm text-slate-300 mb-4">An error occurred.</p>
+            <button id="btnRetry" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Retry</button>
         </div>
 
-        <!-- Server Grid Container -->
         <div id="serverContainer" class="hidden">
-            <div id="serverGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Cards dynamically injected here -->
-            </div>
-
-            <!-- Empty State -->
+            <div id="serverGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             <div id="emptyState" class="hidden py-16 text-center text-slate-400">
-                <p class="text-lg font-medium">No servers match your search criteria.</p>
-                <p class="text-sm text-slate-500 mt-1">Try resetting your search query or filters.</p>
+                <p class="text-lg font-medium">No servers match your criteria.</p>
             </div>
-
-            <!-- Pagination -->
             <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800 pt-6">
                 <div class="text-sm text-slate-400">
                     Showing <span id="pageStart" class="font-semibold text-slate-200">0</span> - 
@@ -122,425 +90,26 @@
                     <span id="totalFiltered" class="font-semibold text-slate-200">0</span> servers
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button id="btnPrev" onclick="changePage(-1)" class="px-3 py-1.5 bg-slate-800 border border-slate-700 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm rounded-lg transition">
-                        Previous
-                    </button>
+                    <button id="btnPrev" class="px-3 py-1.5 bg-slate-800 border border-slate-700 hover:bg-slate-700 disabled:opacity-50 text-sm rounded-lg">Previous</button>
                     <span id="pageIndicator" class="text-sm text-slate-400 px-2">Page 1</span>
-                    <button id="btnNext" onclick="changePage(1)" class="px-3 py-1.5 bg-slate-800 border border-slate-700 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm rounded-lg transition">
-                        Next
-                    </button>
+                    <button id="btnNext" class="px-3 py-1.5 bg-slate-800 border border-slate-700 hover:bg-slate-700 disabled:opacity-50 text-sm rounded-lg">Next</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Details Modal -->
+    <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/50">
+            <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
                 <h3 id="modalTitle" class="text-lg font-bold text-white">Server Details</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
+                <button id="btnCloseModal" class="text-slate-400 hover:text-white p-1 rounded-lg">✕</button>
             </div>
-            <div id="modalContent" class="p-6 overflow-y-auto space-y-6 text-sm text-slate-300">
-                <!-- Dynamic content -->
-            </div>
-            <div class="px-6 py-3 border-t border-slate-700 bg-slate-800/50 flex justify-end">
-                <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition">
-                    Close
-                </button>
-            </div>
+            <div id="modalContent" class="p-6 overflow-y-auto space-y-6 text-sm text-slate-300"></div>
         </div>
     </div>
 
-    <!-- Application Script -->
-    <script>
-        const API_URL = 'https://api.nordvpn.com/v1/servers';
-        const PAGE_SIZE = 24;
-
-        let rawServers = [];
-        let filteredServers = [];
-        let currentPage = 1;
-        
-        // Cache ping results by server ID to preserve values across page switches
-        const pingCache = new Map(); 
-
-        // Elements
-        const loadingState = document.getElementById('loadingState');
-        const errorState = document.getElementById('errorState');
-        const errorMessage = document.getElementById('errorMessage');
-        const serverContainer = document.getElementById('serverContainer');
-        const serverGrid = document.getElementById('serverGrid');
-        const emptyState = document.getElementById('emptyState');
-        
-        const searchInput = document.getElementById('searchInput');
-        const countryFilter = document.getElementById('countryFilter');
-        const statusFilter = document.getElementById('statusFilter');
-        const sortBy = document.getElementById('sortBy');
-
-        const statTotal = document.getElementById('statTotal');
-        const statOnline = document.getElementById('statOnline');
-        const statAvgLoad = document.getElementById('statAvgLoad');
-
-        const pageStart = document.getElementById('pageStart');
-        const pageEnd = document.getElementById('pageEnd');
-        const totalFiltered = document.getElementById('totalFiltered');
-        const btnPrev = document.getElementById('btnPrev');
-        const btnNext = document.getElementById('btnNext');
-        pageIndicator = document.getElementById('pageIndicator');
-
-        const modal = document.getElementById('modal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalContent = document.getElementById('modalContent');
-
-        // Fetch Data from NordVPN API
-        async function fetchServers() {
-            loadingState.classList.remove('hidden');
-            errorState.classList.add('hidden');
-            serverContainer.classList.add('hidden');
-
-            try {
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-                rawServers = await response.json();
-
-                populateCountryFilter(rawServers);
-                updateGlobalStats(rawServers);
-                applyFilters();
-
-                loadingState.classList.add('hidden');
-                serverContainer.classList.remove('hidden');
-            } catch (err) {
-                loadingState.classList.add('hidden');
-                errorState.classList.remove('hidden');
-                errorMessage.textContent = err.message || 'Failed to fetch NordVPN servers.';
-            }
-        }
-
-        // Measure Browser HTTP Latency
-        async function measureLatency(server) {
-            const start = performance.now();
-            // Use station IP over HTTP or fallback to hostname
-            const targetUrl = `https://${server.hostname}:443`;
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3500); // 3.5s timeout
-
-            try {
-                await fetch(targetUrl, { 
-                    method: 'HEAD', 
-                    mode: 'no-cors', 
-                    cache: 'no-store',
-                    signal: controller.signal 
-                });
-                clearTimeout(timeoutId);
-                const duration = Math.round(performance.now() - start);
-                pingCache.set(server.id, duration);
-                return duration;
-            } catch (err) {
-                clearTimeout(timeoutId);
-                // In no-cors, fetch promises resolve even if blocked, but network/timeout errors hit catch block
-                if (err.name === 'AbortError') {
-                    pingCache.set(server.id, 9999); // Timeout
-                    return 9999;
-                }
-                // Calculate elapsed time even if browser blocked standard request
-                const duration = Math.round(performance.now() - start);
-                pingCache.set(server.id, duration);
-                return duration;
-            }
-        }
-
-        // Single Server Ping Action
-        async function pingSingleServer(serverId) {
-            const server = rawServers.find(s => s.id === serverId);
-            if (!server) return;
-
-            const badge = document.getElementById(`ping-badge-${serverId}`);
-            if (badge) {
-                badge.innerHTML = `<span class="animate-pulse text-amber-400">Testing...</span>`;
-            }
-
-            const latency = await measureLatency(server);
-            updatePingUI(serverId, latency);
-        }
-
-        // Ping All Currently Visible Servers in Batch
-        async function pingVisibleServers() {
-            const startIdx = (currentPage - 1) * PAGE_SIZE;
-            const pageItems = filteredServers.slice(startIdx, startIdx + PAGE_SIZE);
-
-            pageItems.forEach(server => {
-                const badge = document.getElementById(`ping-badge-${server.id}`);
-                if (badge) {
-                    badge.innerHTML = `<span class="animate-pulse text-amber-400">Testing...</span>`;
-                }
-            });
-
-            // Execute concurrent latency tests
-            await Promise.all(pageItems.map(server => measureLatency(server)));
-            
-            // Re-render grid if currently sorting by ping
-            if (sortBy.value === 'ping_asc') {
-                applyFilters();
-            } else {
-                renderGrid();
-            }
-        }
-
-        function updatePingUI(serverId, latency) {
-            const badge = document.getElementById(`ping-badge-${serverId}`);
-            if (!badge) return;
-
-            if (latency >= 9999) {
-                badge.className = 'font-mono text-red-400 font-semibold';
-                badge.textContent = 'Timeout';
-            } else if (latency < 100) {
-                badge.className = 'font-mono text-emerald-400 font-semibold';
-                badge.textContent = `${latency} ms`;
-            } else if (latency < 250) {
-                badge.className = 'font-mono text-amber-400 font-semibold';
-                badge.textContent = `${latency} ms`;
-            } else {
-                badge.className = 'font-mono text-red-400 font-semibold';
-                badge.textContent = `${latency} ms`;
-            }
-        }
-
-        // Populate Country Dropdown
-        function populateCountryFilter(servers) {
-            const countries = new Map();
-            servers.forEach(s => {
-                const country = s.locations?.[0]?.country;
-                if (country && !countries.has(country.code)) {
-                    countries.set(country.code, country.name);
-                }
-            });
-
-            const sortedCountries = Array.from(countries.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-            countryFilter.innerHTML = '<option value="">All Countries</option>';
-            sortedCountries.forEach(([code, name]) => {
-                const opt = document.createElement('option');
-                opt.value = code;
-                opt.textContent = name;
-                countryFilter.appendChild(opt);
-            });
-        }
-
-        // Global Stats Calculation
-        function updateGlobalStats(servers) {
-            const total = servers.length;
-            const online = servers.filter(s => s.status === 'online').length;
-            const avgLoad = total > 0 ? Math.round(servers.reduce((acc, s) => acc + (s.load || 0), 0) / total) : 0;
-
-            statTotal.textContent = total.toLocaleString();
-            statOnline.textContent = online.toLocaleString();
-            statAvgLoad.textContent = `${avgLoad}%`;
-        }
-
-        // Filter and Sort Pipeline
-        function applyFilters() {
-            const query = searchInput.value.toLowerCase().trim();
-            const country = countryFilter.value;
-            const status = statusFilter.value;
-            const sort = sortBy.value;
-
-            filteredServers = rawServers.filter(s => {
-                const matchesSearch = !query || 
-                    s.name.toLowerCase().includes(query) ||
-                    s.hostname.toLowerCase().includes(query) ||
-                    s.station.includes(query) ||
-                    s.locations?.[0]?.country?.name.toLowerCase().includes(query) ||
-                    s.locations?.[0]?.country?.city?.name.toLowerCase().includes(query);
-
-                const matchesCountry = !country || s.locations?.[0]?.country?.code === country;
-                const matchesStatus = !status || s.status === status;
-
-                return matchesSearch && matchesCountry && matchesStatus;
-            });
-
-            // Sorting logic
-            filteredServers.sort((a, b) => {
-                if (sort === 'ping_asc') {
-                    const pingA = pingCache.has(a.id) ? pingCache.get(a.id) : 99999;
-                    const pingB = pingCache.has(b.id) ? pingCache.get(b.id) : 99999;
-                    return pingA - pingB;
-                }
-                if (sort === 'name_asc') return a.name.localeCompare(b.name);
-                if (sort === 'load_asc') return (a.load || 0) - (b.load || 0);
-                if (sort === 'load_desc') return (b.load || 0) - (a.load || 0);
-                return 0;
-            });
-
-            currentPage = 1;
-            renderGrid();
-        }
-
-        // Render Grid
-        function renderGrid() {
-            serverGrid.innerHTML = '';
-            const total = filteredServers.length;
-
-            if (total === 0) {
-                emptyState.classList.remove('hidden');
-                pageStart.textContent = '0';
-                pageEnd.textContent = '0';
-                totalFiltered.textContent = '0';
-                btnPrev.disabled = true;
-                btnNext.disabled = true;
-                pageIndicator.textContent = 'Page 0 of 0';
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-
-            const totalPages = Math.ceil(total / PAGE_SIZE);
-            const startIdx = (currentPage - 1) * PAGE_SIZE;
-            const pageItems = filteredServers.slice(startIdx, startIdx + PAGE_SIZE);
-
-            pageItems.forEach(server => {
-                const card = createServerCard(server);
-                serverGrid.appendChild(card);
-            });
-
-            pageStart.textContent = (startIdx + 1).toLocaleString();
-            pageEnd.textContent = Math.min(startIdx + PAGE_SIZE, total).toLocaleString();
-            totalFiltered.textContent = total.toLocaleString();
-
-            btnPrev.disabled = currentPage === 1;
-            btnNext.disabled = currentPage === totalPages;
-            pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
-        }
-
-        // Create HTML Server Card Element
-        function createServerCard(server) {
-            const card = document.createElement('div');
-            card.className = 'bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-slate-600 transition flex flex-col justify-between shadow-sm hover:shadow-md';
-
-            const countryName = server.locations?.[0]?.country?.name || 'Unknown Country';
-            const cityName = server.locations?.[0]?.country?.city?.name || 'Unknown City';
-            const load = server.load || 0;
-
-            let loadColor = 'bg-emerald-500';
-            if (load > 60) loadColor = 'bg-amber-500';
-            if (load > 85) loadColor = 'bg-red-500';
-
-            const cachedPing = pingCache.get(server.id);
-
-            card.innerHTML = `
-                <div>
-                    <div class="flex items-start justify-between gap-2 mb-3">
-                        <div>
-                            <h3 class="font-bold text-white text-base leading-tight">${server.name}</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">${cityName}, ${countryName}</p>
-                        </div>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${server.status === 'online' ? 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/30' : 'bg-red-900/40 text-red-400 border border-red-500/30'}">
-                            ${server.status}
-                        </span>
-                    </div>
-
-                    <div class="space-y-2 text-xs text-slate-300 mb-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-slate-400">IP / Station:</span>
-                            <span class="font-mono text-slate-200">${server.station || 'N/A'}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-slate-400">Ping (RTT):</span>
-                            <span id="ping-badge-${server.id}" class="font-mono text-slate-400">
-                                ${cachedPing !== undefined ? (cachedPing >= 9999 ? '<span class="text-red-400">Timeout</span>' : `${cachedPing} ms`) : 'Unchecked'}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Load Bar -->
-                    <div class="mb-4">
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="text-slate-400">Server Load</span>
-                            <span class="font-semibold text-slate-200">${load}%</span>
-                        </div>
-                        <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                            <div class="${loadColor} h-1.5 rounded-full" style="width: ${load}%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-2 mt-2">
-                    <button onclick="pingSingleServer(${server.id})" class="flex-1 bg-slate-700/60 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600/50 text-xs py-2 rounded-lg font-medium transition flex items-center justify-center space-x-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        <span>Test Ping</span>
-                    </button>
-                    <button onclick="openModal(${server.id})" class="px-3 bg-slate-700/30 hover:bg-slate-700/60 text-slate-300 hover:text-white border border-slate-600/50 text-xs py-2 rounded-lg font-medium transition">
-                        Specs
-                    </button>
-                </div>
-            `;
-
-            return card;
-        }
-
-        // Pagination Navigation
-        function changePage(delta) {
-            currentPage += delta;
-            renderGrid();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Open Modal
-        function openModal(serverId) {
-            const server = rawServers.find(s => s.id === serverId);
-            if (!server) return;
-
-            modalTitle.textContent = `${server.name} (${server.hostname})`;
-
-            const technologiesList = (server.technologies || []).map(t => `
-                <li class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-700">
-                    <div class="font-semibold text-white text-xs">${t.name} <span class="text-slate-500 font-normal">(${t.identifier})</span></div>
-                    ${t.pivot?.status ? `<div class="text-[11px] text-emerald-400 mt-0.5">Status: ${t.pivot.status}</div>` : ''}
-                </li>
-            `).join('');
-
-            modalContent.innerHTML = `
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                    <div><span class="text-slate-400">ID:</span> <span class="text-white font-mono">${server.id}</span></div>
-                    <div><span class="text-slate-400">Status:</span> <span class="text-white font-semibold">${server.status}</span></div>
-                    <div><span class="text-slate-400">Station IP:</span> <span class="text-white font-mono">${server.station}</span></div>
-                    <div><span class="text-slate-400">Hostname:</span> <span class="text-white font-mono">${server.hostname}</span></div>
-                    <div><span class="text-slate-400">Load:</span> <span class="text-white">${server.load}%</span></div>
-                    <div><span class="text-slate-400">Updated:</span> <span class="text-white">${server.updated_at}</span></div>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Supported Technologies</h4>
-                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        ${technologiesList || '<li class="text-slate-500">None reported</li>'}
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Raw JSON Payload</h4>
-                    <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-blue-300 overflow-x-auto font-mono max-h-48">${JSON.stringify(server, null, 2)}</pre>
-                </div>
-            `;
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            modal.classList.add('hidden');
-        }
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        // Event Listeners for Filters
-        searchInput.addEventListener('input', applyFilters);
-        countryFilter.addEventListener('change', applyFilters);
-        statusFilter.addEventListener('change', applyFilters);
-        sortBy.addEventListener('change', applyFilters);
-
-        // Initial Fetch
-        fetchServers();
-    </script>
+    <!-- External Script Load -->
+    <script src="app.js"></script>
 </body>
 </html>
